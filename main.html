@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buddy Interaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://th.bing.com/th/id/OIG1.0mAcCoW15SM9UdgyZyuX?pid=ImgGn');
+            background-size: cover; /* Cover the entire viewport */
+            background-repeat: no-repeat; /* Do not repeat the background image */
+            background-position: center; /* Center the background image */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .face {
+            width: 150px; /* Adjust the size of the face */
+            height: 150px; /* Adjust the size of the face */
+            background-color: #ffd700; /* Yellow color for the face */
+            border-radius: 50%;
+            position: relative;
+            animation: expressionAnimation 1s linear; /* Animation for cute expressions */
+        }
+
+        .eye {
+            position: absolute;
+            width: 20px; /* Adjust the size of the eyes */
+            height: 20px; /* Adjust the size of the eyes */
+            background-color: #000; /* Black color for the eyes */
+            border-radius: 50%;
+        }
+
+        .left-eye {
+            top: 30%; /* Adjust the position of the left eye */
+            left: 25%; /* Adjust the position of the left eye */
+        }
+
+        .right-eye {
+            top: 30%; /* Adjust the position of the right eye */
+            right: 25%; /* Adjust the position of the right eye */
+        }
+
+        .mouth {
+            width: 60px; /* Adjust the width of the mouth */
+            height: 40px; /* Adjust the height of the mouth */
+            border: 3px solid #000; /* Black border for the mouth */
+            border-radius: 0 0 50% 50%; /* Rounded bottom for the mouth */
+            position: absolute;
+            bottom: 20%; /* Adjust the position of the mouth */
+            left: 50%; /* Align the mouth to the center */
+            transform: translateX(-50%);
+        }
+
+        .drawing-board {
+            width: 300px;
+            height: 200px;
+            border: 2px solid black;
+            margin-top: 20px;
+            cursor: crosshair;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        @keyframes expressionAnimation {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="face">
+        <div class="eye left-eye"></div>
+        <div class="eye right-eye"></div>
+        <div class="mouth"></div>
+    </div>
+    <canvas id="drawingBoard" class="drawing-board"></canvas>
+    <div>
+        <button class="button" onclick="playtime()">Playtime Story</button>
+        <button class="button" onclick="bedtime()">Bedtime Story</button>
+        <button class="button" onclick="naptime()">Naptime Story</button>
+        <button class="button" onclick="tellJoke()">Tell me a Joke</button>
+        <button class="button" onclick="singAnimalSounds()">Sing Animal Sounds</button>
+        <button class="button" onclick="singABC()">Sing ABC Song</button>
+        <button class="button" onclick="count123()">Count 1 to 10</button>
+    </div>
+
+    <script>
+        var isStoryTelling = false;
+        var currentStoryIndex = 0;
+
+        var playtimeStories = [
+            "Let's go on an adventure in the magical forest! What do you see?",
+            "We're exploring outer space! Help me navigate through the stars!",
+            "Time to visit the underwater kingdom! What creatures do we meet?"
+        ];
+
+        var bedtimeStories = [
+            "Once upon a time, there was a sleepy bear who just couldn't fall asleep. Can you help him count sheep?",
+            "In the land of dreams, anything is possible. What do you dream about?",
+            "Let's sail away to Dreamland aboard the Sleepytime Ship. Are you ready to set sail?"
+        ];
+
+        var naptimeStories = [
+            "It's time for a little catnap! What cozy spot should we curl up in?",
+            "Naptime is the perfect time for magical dreams. What adventure should we dream about today?",
+            "Shh, it's naptime in the animal kingdom. Can you guess what animal is snoring?"
+        ];
+
+        var jokes = [
+            "Why did the scarecrow win an award? Because he was outstanding in his field!",
+            "Why don't skeletons fight each other? They don't have the guts!",
+            "Why did the tomato turn red? Because it saw the salad dressing!",
+            "What did one ocean say to the other ocean? Nothing, they just waved!",
+            "Why don't scientists trust atoms? Because they make up everything!"
+        ];
+
+        var animalSounds = [
+            "Old MacDonald had a farm, E-I-E-I-O. And on his farm, he had a cow, E-I-E-I-O. With a moo moo here and a moo moo there. Here a moo, there a moo, everywhere a moo moo. Old MacDonald had a farm, E-I-E-I-O.",
+            "Old MacDonald had a farm, E-I-E-I-O. And on his farm, he had a duck, E-I-E-I-O. With a quack quack here and a quack quack there. Here a quack, there a quack, everywhere a quack quack. Old MacDonald had a farm, E-I-E-I-O.",
+            "Old MacDonald had a farm, E-I-E-I-O. And on his farm, he had a pig, E-I-E-I-O. With an oink oink here and an oink oink there. Here an oink, there an oink, everywhere an oink oink. Old MacDonald had a farm, E-I-E-I-O.",
+            "Old MacDonald had a farm, E-I-E-I-O. And on his farm, he had a sheep, E-I-E-I-O. With a baa baa here and a baa baa there. Here a baa, there a baa, everywhere a baa baa. Old MacDonald had a farm, E-I-E-I-O.",
+            "Old MacDonald had a farm, E-I-E-I-O. And on his farm, he had a horse, E-I-E-I-O. With a neigh neigh here and a neigh neigh there. Here a neigh, there a neigh, everywhere a neigh neigh. Old MacDonald had a farm, E-I-E-I-O."
+        ];
+
+        function playtime() {
+            tellStory(playtimeStories);
+        }
+
+        function bedtime() {
+            tellStory(bedtimeStories);
+        }
+
+        function naptime() {
+            tellStory(naptimeStories);
+        }
+
+        function tellStory(storyType) {
+            if (!isStoryTelling) {
+                isStoryTelling = true;
+                speak(storyType[currentStoryIndex]);
+                animateExpression();
+                currentStoryIndex++;
+            } else {
+                isStoryTelling = false;
+                speak("Storytelling stopped.");
+                animateExpression();
+            }
+        }
+
+        function tellJoke() {
+            var randomIndex = Math.floor(Math.random() * jokes.length);
+            speak(jokes[randomIndex]);
+            animateExpression();
+        }
+
+        function singAnimalSounds() {
+            speak(animalSounds.join(" "));
+            animateExpression();
+        }
+
+        function singABC() {
+            speak("A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, and Z! Now I know my ABCs, next time won't you sing with me?");
+            animateExpression();
+        }
+
+        function count123() {
+            var count = '';
+            for (var i = 1; i <= 10; i++) {
+                count += i + ', ';
+            }
+            speak(count);
+            animateExpression();
+        }
+
+        function speak(text) {
+            var msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
+
+        function animateExpression() {
+            var face = document.querySelector('.face');
+            face.style.animation = 'none';
+            face.offsetHeight; /* Trigger reflow */
+            face.style.animation = null;
+        }
+        
+        var isDrawing = false;
+        var prevX, prevY;
+
+        var drawingBoard = document.getElementById('drawingBoard');
+        var ctx = drawingBoard.getContext('2d');
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'black';
+
+        drawingBoard.addEventListener('mousedown', startDrawing);
+        drawingBoard.addEventListener('mousemove', draw);
+        drawingBoard.addEventListener('mouseup', stopDrawing);
+        drawingBoard.addEventListener('mouseout', stopDrawing);
+        // Touch events
+        drawingBoard.addEventListener('touchstart', handleTouchStart);
+        drawingBoard.addEventListener('touchmove', handleTouchMove);
+        drawingBoard.addEventListener('touchend', handleTouchEnd);
+        drawingBoard.addEventListener('touchcancel', handleTouchEnd);
+
+        function startDrawing(event) {
+            isDrawing = true;
+            setPrevCoordinates(event);
+        }
+
+        function draw(event) {
+            if (isDrawing) {
+                event.preventDefault();
+                var rect = drawingBoard.getBoundingClientRect();
+                var x = event.clientX - rect.left;
+                var y = event.clientY - rect.top;
+                drawLine(prevX, prevY, x, y);
+                setPrevCoordinates(event);
+            }
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouchStart(event) {
+            if (event.touches.length === 1) {
+                event.preventDefault();
+                var rect = drawingBoard.getBoundingClientRect();
+                var touch = event.touches[0];
+                setPrevCoordinates(touch, rect);
+            }
+        }
+
+        function handleTouchMove(event) {
+            if (event.touches.length === 1) {
+                event.preventDefault();
+                var rect = drawingBoard.getBoundingClientRect();
+                var touch = event.touches[0];
+                var x = touch.clientX - rect.left;
+                var y = touch.clientY - rect.top;
+                drawLine(prevX, prevY, x, y);
+                setPrevCoordinates(touch, rect);
+            }
+        }
+
+        function handleTouchEnd() {
+            isDrawing = false;
+        }
+
+        function setPrevCoordinates(event, rect) {
+            rect = rect || drawingBoard.getBoundingClientRect();
+            prevX = event.clientX - rect.left;
+            prevY = event.clientY - rect.top;
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
